@@ -69,6 +69,7 @@ var (
 	MagicBasicPkt = Magic{0xc3, 0x15, 0xa7, 0x65}
 )
 
+// 索引设置
 const (
 	OfflineReadIndexExpiresIn = time.Hour * 24 * 30 // 读索引在缓存中的过期时间
 	OfflineSyncIndexCount     = 2000                //单次同步消息索引的数量
