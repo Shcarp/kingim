@@ -1,0 +1,9 @@
+ServiceID: gate01
+ServiceName: wgateway
+Listen: ":8000"
+MonitorPort: 8001
+PublicPort: 8000
+Tags:
+  - gate
+ConsulURL: localhost:8500
+AppSecret: ""
