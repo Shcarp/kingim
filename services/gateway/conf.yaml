@@ -1,8 +1,8 @@
 ServiceID: gate01
 ServiceName: wgateway
-Listen: ":8000"
+Listen: ":7999"
 MonitorPort: 8001
-PublicPort: 8000
+PublicPort: 7999
 Tags:
   - gate
 ConsulURL: localhost:8500

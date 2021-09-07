@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"context"
+	"fmt"
 	"github.com/spf13/cobra"
 	"kingim"
 	"kingim/container"
@@ -55,6 +56,9 @@ func RunServerStart(ctx context.Context, opts*ServerStartOptions, version string
 		Port: config.PublicPort,
 		Protocol: opts.protocol,
 		Tags: config.Tags,
+		Meta: map[string]string{
+			consul.KeyHealthURL: fmt.Sprintf("http://%s:%d/health", config.PublicAddress, config.MonitorPort),
+		},
 	}
 	if opts.protocol == "ws" {
 		srv = websocket.NewServer(config.Listen, service)

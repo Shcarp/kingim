@@ -1,38 +1,58 @@
 package conf
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/klintcheng/kim/logger"
 	"github.com/spf13/viper"
+	"kingim"
+	"kingim/logger"
+	"strings"
 )
 
+// Config Config
 type Config struct {
-	ServiceID string  `envconfig:"serviceId"`
-	ServiceName string `envconfig:"serviceName"`
-	Namespace string `envconfig:"namespace"`
-	Listen string `envconfig:"listen"`
-	PublicAddress string `envconfig:"publicAddress"`
-	PublicPort int `envconfig:"publicPort"`
-	Tags          []string `envconfig:"tags"`
-	ConsulURL     string   `envconfig:"consulURL"`
+	ServiceID     string
+	ServiceName   string `default:"gateway"`
+	Listen        string `default:":8000"`
+	PublicAddress string
+	PublicPort    int `default:"8000"`
+	Tags          []string
+	ConsulURL     string
+	MonitorPort   int `default:"8001"`
+	AppSecret     string
+	LogLevel      string `default:"INFO"`
 }
 
+func (c Config) String() string {
+	bts, _ := json.Marshal(c)
+	return string(bts)
+}
+
+// Init InitConfig
 func Init(file string) (*Config, error) {
-	viper.SetConfigFile(file)  // 指定配置文件目录
-	viper.AddConfigPath(".")  // 添加配置文件搜索路径 在工作目录中查找
+	viper.SetConfigFile(file)
+	viper.AddConfigPath(".")
 	viper.AddConfigPath("/etc/conf")
-	if err := viper.ReadInConfig(); err!= nil {
-		return nil,fmt.Errorf("config file not found: %w", err)
-	}
-	// 返序列化
+
 	var config Config
-	if err := viper.Unmarshal(&config);err != nil {
-		return nil,err
+	if err := viper.ReadInConfig(); err != nil {
+		logger.Warn(err)
+	} else {
+		if err := viper.Unmarshal(&config); err != nil {
+			return nil, err
+		}
 	}
-	err := envconfig.Process("", &config)
-	if err != nil{
-		return nil,err
+	err := envconfig.Process("kim", &config)
+	if err != nil {
+		return nil, err
+	}
+	if config.ServiceID == "" {
+		localIP := kingim.GetLocalIP()
+		config.ServiceID = fmt.Sprintf("gate_%s", strings.ReplaceAll(localIP, ".", ""))
+	}
+	if config.PublicAddress == "" {
+		config.PublicAddress = kingim.GetLocalIP()
 	}
 	logger.Info(config)
 	return &config, nil

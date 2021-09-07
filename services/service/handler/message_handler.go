@@ -17,6 +17,7 @@ type ServiceHandle struct {
 	Cache     *redis.Client
 	Idgen     *database.IDGenerator
 }
+
 func (h*ServiceHandle) InsertUserMessage(c iris.Context) {
 	var req rpc.InsertMessageReq
 	if err := c.ReadBody(&req);err != nil {
