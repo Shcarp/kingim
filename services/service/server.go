@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/kataras/iris/v12"
+	"github.com/spf13/cobra"
 	"hash/crc32"
 	"kingim/logger"
 	"kingim/naming"
@@ -18,7 +19,21 @@ type ServerStartOptions struct {
 	config string
 }
 
-func RunServerStart(ctx context.Context, opts ServerStartOptions, version string) error {
+func NewServerStartCmd(ctx context.Context, version string) *cobra.Command {
+	opts := &ServerStartOptions{}
+
+	cmd := &cobra.Command{
+		Use:   "royal",
+		Short: "Start a rpc service",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return RunServerStart(ctx, opts, version)
+		},
+	}
+	cmd.PersistentFlags().StringVarP(&opts.config, "config", "c", "conf.yaml", "Config file")
+	return cmd
+}
+
+func RunServerStart(ctx context.Context, opts *ServerStartOptions, version string) error {
 	config, err := conf.Init(opts.config)
 	if err != nil {
 		return err
@@ -74,7 +89,9 @@ func RunServerStart(ctx context.Context, opts ServerStartOptions, version string
 	ac := conf.MakeAccessLog()
 	defer ac.Close()
 	app := newApp(&serviceHandler)
-	
+	app.UseRouter(ac.Handler)
+	app.UseRouter(setAllowedResponses)
+	return app.Listen(config.Listen, iris.WithOptimizations)
 }
 
 // api 接口
@@ -104,6 +121,12 @@ func newApp(handle *handler.ServiceHandle) *iris.Application {
 		offlineAPI.Post("/content", handle.GetOfflineMessageContent)
 	}
 	return app
+}
+
+func setAllowedResponses(ctx iris.Context){
+	ctx.Negotiation().JSON().Protobuf().MsgPack()
+	ctx.Negotiation().Accept.JSON()
+	ctx.Next()
 }
 
 func HashCode(key string) uint32 {
