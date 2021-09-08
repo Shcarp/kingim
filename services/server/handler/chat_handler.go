@@ -42,9 +42,22 @@ func (c*ChatHandler) DoUserTalk(ctx kingim.Context) {
 	}
 	// 保存离线信息
 	sendTime := time.Now().UnixNano()
-
+	resp, err := c.msgService.InsertUser(ctx.Session().GetApp(), &rpc.InsertMessageReq{
+		Sender: ctx.Session().GetAccount(),
+		Dest: receiver,
+		SendTime: sendTime,
+		Message: &rpc.Message{
+			Type: req.Type,
+			Body: req.Body,
+			Extra: req.Extra,
+		},
+	})
+	if err != nil {
+		_ = ctx.RespWithError(pkt.Status_SystemException, err)
+		return
+	}
 	// 如果接收方在线 将信息发送过去
-	var messageId int64
+	var messageId int64 = resp.MessageId
 	if loc != nil {
 		if err = ctx.Dispatch(&pkt.MessagePush{
 			MessageId: messageId,
