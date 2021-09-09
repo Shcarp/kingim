@@ -20,6 +20,7 @@ var log = logger.WithFields(logger.Fields{
 
 type Handel struct {
 	ServiceID string
+	AppSecret string
 }
 
 func (h *Handel) Accept(conn kingim.Conn, duration time.Duration) (string, error) {

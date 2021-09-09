@@ -43,10 +43,12 @@ func RunServerStart(ctx context.Context, opts*ServerStartOptions, version string
 	}
 	// 初始化日志
 	_ = logger.Init(logger.Settings{
-		Level: "trace",
+		Level: "info",
+		Filename: "./data/gateway.log",
 	})
 	handler := &serv.Handel{
 		ServiceID: config.ServiceID,
+		AppSecret: config.AppSecret,
 	}
 	var srv kingim.Server
 	service := &naming.DefaultService{
