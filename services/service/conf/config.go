@@ -30,17 +30,15 @@ type Config struct {
 	LogLevel      string `default:"INFO"`
 }
 
-func (c*Config) String() string {
+func (c Config) String() string {
 	bts,_ := json.Marshal(c)
 	return string(bts)
 }
 
 func Init(file string) (*Config, error) {
-	fmt.Println(file)
 	viper.SetConfigFile(file)
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("/etc/conf")
-
 	var config Config
 	if err := viper.ReadInConfig(); err != nil {
 		logger.Warn(err)
