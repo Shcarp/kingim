@@ -4,11 +4,11 @@ import (
 	"context"
 	"flag"
 
+	"github.com/spf13/cobra"
 	"kingim/examples/echo"
 	"kingim/examples/kimbench"
 	"kingim/examples/mock"
 	"kingim/logger"
-	"github.com/spf13/cobra"
 )
 
 const version = "v1"
