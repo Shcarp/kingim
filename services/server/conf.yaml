@@ -4,6 +4,6 @@ MonitorPort: 8006
 PublicPort: 8005
 Tags:
   - server
-ConsulURL: localhost:8500
-RedisAddrs: localhost:6379
-RoyalURL: http://localhost:8080
+ConsulURL: 127.0.0.1:8500
+RedisAddrs: 127.0.01:6379
+RoyalURL: http://127.0.0.1:8080

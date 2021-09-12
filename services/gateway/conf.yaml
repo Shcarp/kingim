@@ -5,5 +5,5 @@ MonitorPort: 8001
 PublicPort: 8000
 Tags:
   - gate
-ConsulURL: localhost:8500
+ConsulURL: 127.0.01:8500
 AppSecret: ""

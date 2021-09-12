@@ -36,18 +36,26 @@ func (c*Config) String() string {
 }
 
 func Init(file string) (*Config, error) {
+	fmt.Println(file)
 	viper.SetConfigFile(file)
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("/etc/conf")
+
 	var config Config
 	if err := viper.ReadInConfig(); err != nil {
 		logger.Warn(err)
-	}else {
+		config.ServiceID = "royal01"
+		config.Listen = ":8080"
+		config.ConsulURL = "127.0.0.1:8500"
+		//config.Tags =
+		config.BaseDb = "root:Aa123456@tcp(sh-cynosdbmysql-grp-69gahe56.sql.tencentcdb.com:21141)/kim_base?charset=utf8mb4&parseTime=True&loc=Local"
+		config.MessageDb = "root:Aa123456@tcp(sh-cynosdbmysql-grp-69gahe56.sql.tencentcdb.com:21141)/kim_message?charset=utf8mb4&parseTime=True&loc=Local"
+	} else {
 		if err := viper.Unmarshal(&config); err != nil {
-			return nil,err
+			return nil, err
 		}
 	}
-	err := envconfig.Process("kingim", &config)
+	err := envconfig.Process("kim", &config)
 	if err != nil {
 		return nil,err
 	}
