@@ -14,6 +14,7 @@ const (
 )
 
 // 定义了基础服务的抽象接口
+
 type Service interface {
 	ServiceID() string
 	ServiceName() string
@@ -21,6 +22,7 @@ type Service interface {
 }
 
 // 定义服务注册的抽象接口
+
 type ServiceRegistration interface {
 	Service
 	PublicAddress() string

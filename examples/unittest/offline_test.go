@@ -6,17 +6,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 	"kingim"
+	"kingim/examples/dialer"
 	"kingim/logger"
 	"kingim/wire"
 	"kingim/wire/pkt"
+	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func Test_offline(t *testing.T) {
 	src := fmt.Sprintf("u%d", time.Now().Unix())
-	cli, err := login(src)
+	cli, err := dialer.Login(wsurl, src)
 	assert.Nil(t, err)
 
 	dest := fmt.Sprintf("u%d", time.Now().Unix()+1)
@@ -36,7 +37,7 @@ func Test_offline(t *testing.T) {
 		_, _ = cli.Read()
 	}
 
-	destcli, err := login(dest)
+	destcli, err := dialer.Login(wsurl, dest)
 	assert.Nil(t, err)
 
 	// request offline message index

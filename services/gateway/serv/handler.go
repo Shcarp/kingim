@@ -34,11 +34,12 @@ func (h *Handel) Accept(conn kingim.Conn, duration time.Duration) (string, error
 	_ = conn.SetReadDeadline(time.Now().Add(duration))
 	frame, err := conn.ReadFrame()
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	buf := bytes.NewBuffer(frame.GetPayload())
 	req, err := pkt.MustReadLogicPkt(buf)
 	if err != nil {
+		log.Error(err)
 		return "", err
 	}
 	// 必须是登录包
@@ -46,13 +47,17 @@ func (h *Handel) Accept(conn kingim.Conn, duration time.Duration) (string, error
 		resp := pkt.NewFrom(&req.Header)
 		resp.Status = pkt.Status_InvalidCommand
 		_ = conn.WriteFrame(kingim.OpBinary, pkt.Marshal(resp))
-		return "", fmt.Errorf("must be a InvalidCommand")
+		return "", fmt.Errorf("must be a SingIn Command")
 	}
-	// 放序列化BODY
+	// 反序列化BODY
 	var login pkt.LoginReq
 	err = req.ReadBody(&login)
 	if err != nil {
-		return "", nil
+		return "", err
+	}
+	secret := h.AppSecret
+	if secret == "" {
+		secret = token.DefaultSecret
 	}
 	// token认证
 	tk, err := token.Parse(token.DefaultSecret, login.Token)
@@ -74,6 +79,7 @@ func (h *Handel) Accept(conn kingim.Conn, duration time.Duration) (string, error
 	// 转发给聊天服务
 	err = container.Forward(wire.SNLogin, req)
 	if err != nil {
+		log.Error(err)
 		return "", err
 	}
 	return id, nil

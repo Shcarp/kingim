@@ -1,8 +1,8 @@
 package kingim
 
 import (
-	"kingim/logger"
 	"github.com/pkg/errors"
+	"kingim/logger"
 	"sync"
 	"time"
 )

@@ -5,13 +5,13 @@ import (
 	"context"
 	"time"
 
-	"github.com/spf13/cobra"
 	"kingim"
 	"kingim/examples/dialer"
 	"kingim/logger"
 	"kingim/websocket"
 	"kingim/wire"
 	"kingim/wire/pkt"
+	"github.com/spf13/cobra"
 )
 
 // StartOptions StartOptions
@@ -35,7 +35,7 @@ func NewCmd(ctx context.Context) *cobra.Command {
 
 func run(ctx context.Context, opts *StartOptions) error {
 	cli := websocket.NewClient("test1", "echo", websocket.ClientOptions{
-		HeartBeat: time.Second * 30,
+		Heartbeat: time.Second * 30,
 		ReadWait:  time.Minute * 3,
 		WriteWait: time.Second * 10,
 	})

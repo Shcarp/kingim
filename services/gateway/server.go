@@ -11,6 +11,7 @@ import (
 	"kingim/naming/consul"
 	"kingim/services/gateway/conf"
 	"kingim/services/gateway/serv"
+	"kingim/tcp"
 	"kingim/websocket"
 	"kingim/wire"
 	"time"
@@ -64,6 +65,8 @@ func RunServerStart(ctx context.Context, opts*ServerStartOptions, version string
 	}
 	if opts.protocol == "ws" {
 		srv = websocket.NewServer(config.Listen, service)
+	} else if opts.protocol == "tcp" {
+		srv = tcp.NewServer(config.Listen, service)
 	}
 	// 将方法注入服务
 	srv.SetReadWait(time.Minute*2)
@@ -71,6 +74,7 @@ func RunServerStart(ctx context.Context, opts*ServerStartOptions, version string
 	srv.SetMessageListener(handler)
 	srv.SetStateListener(handler)
 	_ = container.Init(srv, wire.SNChat, wire.SNLogin)  // 初始化网关服务，并且注入依赖
+	container.EnableMonitor(fmt.Sprintf(":%d", config.MonitorPort))
 	ns, err:= consul.NewNaming(config.ConsulURL)
 	if err != nil {
 		return err
